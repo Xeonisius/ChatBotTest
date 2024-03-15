@@ -47,9 +47,10 @@ async def audio_handler(update: Update, context: CallbackContext):
         audio.export(wav_file_path, format="wav")   
         # Delete the original OGG file as we only want to keep the WAV version
         os.remove(ogg_file_path)
+        # Upload the file to the Firebase
         upload_file_to_firebase(wav_file_path, f'audio/{update.message.from_user.id}', f"audio_message_{user_audio_counters[user_id]}.wav")
         await update.message.reply_text(f"Audio saved as audio_message_{user_audio_counters[user_id]}.")
-        # Updates the counter
+        # Update the counter
         user_audio_counters[user_id] += 1
 
 # Function for recognising faces on photo and uploading it on drive
@@ -59,9 +60,9 @@ async def photo_handler(update: Update, context: CallbackContext):
         photo_file = await context.bot.get_file(photo.file_id)
         # Form the file path
         photo_file_path = f"./{update.message.from_user.id}_photo_{update.message.message_id}.jpg"
-        # Downloads the photo
+        # Download the photo
         await photo_file.download_to_drive(photo_file_path)
-        # Checks for the face in the foto
+        # Check for the face in the foto
         face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         image = cv2.imread(photo_file_path)
         gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
